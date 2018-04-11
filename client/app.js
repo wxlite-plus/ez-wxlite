@@ -84,27 +84,32 @@ function checkSDK() {
  * 检查新版本
  */
 function checkForUpdate() {
+  const storageKey = 'updateRemindTime';
+
   if (wx.getUpdateManager) {
     const updateManager = wx.getUpdateManager();
 
     updateManager.onCheckForUpdate((res) => {
       // 请求完新版本信息的回调
       console.log('请求完新版本信息的回调：', res.hasUpdate);
+      if (!res.hasUpdate) {
+        wx.removeStorageSync(storageKey);
+      }
     });
 
     updateManager.onUpdateReady(() => {
       // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
-      const updateRemindTime = wx.getStorageInfoSync('updateRemindTime');
+      const updateRemindTime = wx.getStorageInfoSync(storageKey);
 
       console.log('新的版本已经下载好');
       // 如果时间今天已经提示过，则不再提示
       if (!updateRemindTime || !utils.isToday(updateRemindTime)) {
-        wx.setStorageSync('updateRemindTime', new Date().getTime());
+        wx.setStorageSync(storageKey, new Date().getTime());
         wx.showModal({
           title: '发现新版本',
           content: '有新版本啦！我们做了许多好玩的功能，还不快来体验一下？',
           cancelText: '暂不更新',
-          confirmText: '重启更新',
+          confirmText: '应用更新',
           success(res) {
             if (res.confirm) {
               updateManager.applyUpdate();

@@ -71,7 +71,22 @@ function compareVersion(v1, v2) {
   return 0
 }
 
+/**
+ * 比对时间戳是否是今天
+ */
+function isToday(time) {
+  const day = new Date(time);
+  const today = new Date();
+
+  if ((day.getFullYear() === today.getFullYear()) && (day.getMonth() === today.getMonth()) && (day.getDate() === today.getDate())) {
+    return true;
+  }
+
+  return false;
+}
+
 module.exports = {
   testKL,
-  compareVersion
+  compareVersion,
+  isToday
 };
