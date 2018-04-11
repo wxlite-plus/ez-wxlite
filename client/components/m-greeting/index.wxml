@@ -1,0 +1,6 @@
+<!--components/m-greeting/index.wxml-->
+<view>
+  <view>firstName: {{firstName}}</view>
+  <view>lastName: {{lastName}}</view>
+  <view>fullName: {{firstName + '.' + lastName}}</view>
+</view>

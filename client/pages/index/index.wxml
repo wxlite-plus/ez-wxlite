@@ -1,0 +1,4 @@
+<!--pages/index/index.wxml-->
+<view>Hello, {{name}}</view>
+<m-greeting />
+<navigator url="/pages/test/index"><button size="mini">test page</button></navigator>

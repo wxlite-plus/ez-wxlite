@@ -1,0 +1,17 @@
+{
+  "name": "lz-web-trend-admin",
+  "version": "1.0.0",
+  "description": "动态监控后台管理系统",
+  "main": "index.js",
+  "author": "Jack Lo",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "browser-sync start -c bs-config.js"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.18.13",
+    "express": "^4.16.2",
+    "proxy-middleware": "^0.15.0"
+  }
+}
