@@ -12,30 +12,6 @@ FW.App({
   },
 
   onShow(options) {
-    // 开启debug
-    utils
-      .testKL('开启debug')
-      .then(() => {
-        wx.setEnableDebug({
-          enableDebug: true
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
-    // 打开测试页面
-    utils
-      .testKL('打开测试页面')
-      .then(() => {
-        wx.navigateTo({
-          url: '/pages/test/index'
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
     // 检查SDK版本
     checkSDK();
     // 检查更新
@@ -135,27 +111,6 @@ function checkForUpdate() {
  * 初始化环境
  */
 function initEnv() {
-  // 切换开发环境
-  utils.testKL('切换开发环境')
-    .then(() => {
-      store.setState('apiUrl', setting.apiUrlTable.dev);
-      store.setState('env', 'dev');
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-
-  // 切换预发环境
-  utils
-    .testKL('切换预发环境')
-    .then(() => {
-      store.setState('apiUrl', setting.apiUrlTable.pre);
-      store.setState('env', 'pre');
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-
   // 默认初始化为线上环境
   store.setState('apiUrl', setting.apiUrlTable.online);
   store.setState('env', 'online');
