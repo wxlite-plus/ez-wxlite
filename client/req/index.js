@@ -16,8 +16,6 @@ const R = {
   errPicker,
   // 错误弹窗
   showErr,
-  // 上传图片
-  uploadFile,
   // user
   user: initUserApi(req, state.apiUrl)
 };
@@ -124,20 +122,16 @@ function login() {
         if (r1.code) {
           // 获取sessionId
           requestP({
-            url: `${state.apiUrl}/api/v1/login/${r1.code}`,
+            url: `${state.apiUrl}/api/login/${r1.code}`,
             method: 'POST'
           })
             .then((r2) => {
               if (r2.rcode === 0 && r2.data) {
-                const { sessionId, userId } = r2.data;
+                const { sessionId } = r2.data;
 
                 try {
                   // 保存sessionId
                   store.setState('sessionId', sessionId);
-
-                  // 保存userId
-                  wx.setStorageSync('userId', userId);
-                  store.setState('userId', userId);
 
                   res(r2);
                 } catch (err) {
@@ -151,10 +145,7 @@ function login() {
               rej(err);
             });
         } else {
-          rej({
-            msg: '获取code失败',
-            detail: r1
-          });
+          rej(r1);
         }
       },
       fail(err) {
@@ -245,37 +236,6 @@ function req(options = {}, keepLogin = true) {
     // 不需要sessionId，直接发起请求
     return requestP(options);
   }
-}
-
-function uploadFile(data) {
-  const url = `${state.apiUrl}/api/v1/upload/picture`;
-  const { sessionId } = state;
-
-  return new Promise((res, rej) => {
-    wx.uploadFile({
-      url,
-      filePath: data.filePath,
-      name: 'file',
-      header: {
-        sessionId
-      },
-      success(r) {
-        const isSuccess = isHttpSuccess(r.statusCode);
-
-        if (isSuccess) {  // 成功的请求状态
-          res(JSON.parse(r.data));
-        } else {
-          rej({
-            msg: `网络错误:${r.statusCode}`,
-            detail: r
-          });
-        }
-      },
-      fail(err) {
-        rej(err);
-      }
-    });
-  });
 }
 
 module.exports = R;

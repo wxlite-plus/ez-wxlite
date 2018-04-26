@@ -1,46 +1,6 @@
 const setting = require('../setting.js');
 
 /**
- * 检查口令
- */
-function testKL(key) {
-  const prefix = 'myAppName:';
-  return new Promise((res, rej) => {
-    const kl = setting.kl[prefix + key];
-
-    if (!kl) {
-      rej({
-        msg: '口令不存在',
-        detail: {
-          key
-        }
-      });
-    }
-
-    wx.getClipboardData({
-      success(r) {
-        const reg = new RegExp(kl);
-
-        if (reg.test(r.data)) {
-          res(kl);
-        } else {
-          rej({
-            msg: '口令匹配失败',
-            detail: {
-              key, kl,
-              data: r
-            }
-          });
-        }
-      },
-      fail(err) {
-        rej(err);
-      }
-    });
-  });
-}
-
-/**
  * 微信官方提供的sdk版本比较方法
  * 有bug直接怼微信
  * https://developers.weixin.qq.com/blogdetail?action=get_post_info&lang=zh_CN&token=&docid=000ea80cd78de80e9946942cb51401
@@ -72,21 +32,34 @@ function compareVersion(v1, v2) {
 }
 
 /**
- * 比对时间戳是否是今天
+ * 授权
  */
-function isToday(time) {
-  const day = new Date(time);
-  const today = new Date();
-
-  if ((day.getFullYear() === today.getFullYear()) && (day.getMonth() === today.getMonth()) && (day.getDate() === today.getDate())) {
-    return true;
-  }
-
-  return false;
+function author(type) {
+  return new Promise((res, rej) => {
+    wx.getSetting({
+      success(r1) {
+        if (!r1.authSetting[type]) {
+          wx.authorize({
+            scope: type,
+            success(r2) {
+              res(r2);
+            },
+            fail(err) {
+              rej(err);
+            }
+          })
+        } else {
+          res(r1);
+        }
+      },
+      fail(err) {
+        rej(err);
+      }
+    });
+  });
 }
 
 module.exports = {
-  testKL,
   compareVersion,
-  isToday
+  author
 };

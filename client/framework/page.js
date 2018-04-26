@@ -2,20 +2,15 @@ const store = require('../store/index.js');
 const req = require('../req/index.js');
 
 module.exports = (options = {}) => {
-  // const { onLoad, onUnload } = options;
-  const injectOptions = {
-    $store: store,
-    $req: req
-  };
+  const { onLoad } = options;
+  const injectOptions = {};
   const patchOptions = {
-    // onLoad(...res) {
-    //   console.log('load');
-    //   onLoad && onLoad.apply(this, res);
-    // },
-    // onUnload(...res) {
-    //   console.log('unload');
-    //   onUnload && onUnload.apply(this, res);
-    // }
+    onLoad(...res) {
+      this.$store = store;
+      this.$req = req;
+      console.log('Page option:', res[0]);
+      onLoad && onLoad.apply(this, res);
+    }
   };
   const newOptions = Object.assign(injectOptions, options, patchOptions);
 

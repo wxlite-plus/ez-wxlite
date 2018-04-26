@@ -1,5 +1,4 @@
 const store = require('./store/index.js');
-const utils = require('./utils/index.js');
 const setting = require('./setting.js');
 const FW = require('./framework/index.js');
 
@@ -12,10 +11,7 @@ FW.App({
   },
 
   onShow(options) {
-    // 检查SDK版本
-    checkSDK();
-    // 检查更新
-    checkForUpdate();
+    // Do something when show.
   },
 
   onHide() {
@@ -28,90 +24,10 @@ FW.App({
 });
 
 /**
- * 检查sdk版本
- */
-function checkSDK() {
-  wx.getSystemInfo({
-    success(r1) {
-      const compareRes = utils.compareVersion(r1.SDKVersion, '1.7.0');
-
-      if (compareRes < 0) {
-        wx.showModal({
-          title: '版本过低',
-          content: '当前的微信版本较低，部分功能（如收听直播）将无法正常使用，请升级最新版！',
-          showCancel: false,
-          confirmText: '好的',
-          success(r2) {
-            console.log(r2);
-          },
-          fail(err) {
-            console.log(err);
-          }
-        });
-      }
-    },
-    fail(err) {
-      console.log(err);
-    }
-  });
-}
-
-/**
- * 检查新版本
- */
-function checkForUpdate() {
-  const storageKey = 'updateRemindTime';
-
-  if (wx.getUpdateManager) {
-    const updateManager = wx.getUpdateManager();
-
-    updateManager.onCheckForUpdate((res) => {
-      // 请求完新版本信息的回调
-      console.log('请求完新版本信息的回调：', res.hasUpdate);
-      if (!res.hasUpdate) {
-        wx.removeStorageSync(storageKey);
-      }
-    });
-
-    updateManager.onUpdateReady(() => {
-      // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
-      const updateRemindTime = wx.getStorageInfoSync(storageKey);
-
-      console.log('新的版本已经下载好');
-      // 如果时间今天已经提示过，则不再提示
-      if (!updateRemindTime || !utils.isToday(updateRemindTime)) {
-        wx.setStorageSync(storageKey, new Date().getTime());
-        wx.showModal({
-          title: '发现新版本',
-          content: '有新版本啦！我们做了许多好玩的功能，还不快来体验一下？',
-          cancelText: '暂不更新',
-          confirmText: '应用更新',
-          success(res) {
-            if (res.confirm) {
-              updateManager.applyUpdate();
-            }
-          },
-          fail(err) {
-            console.log(err);
-          }
-        });
-      }
-    });
-
-    updateManager.onUpdateFailed(() => {
-      // 新的版本下载失败
-      console.log('新的版本下载失败');
-    });
-  } else {
-    console.log('不支持更新检测');
-  }
-}
-
-/**
  * 初始化环境
  */
 function initEnv() {
   // 默认初始化为线上环境
-  store.setState('apiUrl', setting.apiUrlTable.online);
-  store.setState('env', 'online');
+  store.setState('apiUrl', setting.apiUrlTable.local);
+  store.setState('env', 'local');
 }
