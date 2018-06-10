@@ -126,12 +126,14 @@ function login() {
             method: 'POST'
           })
             .then((r2) => {
-              if (r2.rcode === 0 && r2.data) {
+              if (r2.code === 0 && r2.data) {
                 const { sessionId } = r2.data;
 
                 try {
                   // 保存sessionId
-                  store.setState('sessionId', sessionId);
+                  store.setState({
+                    sessionId
+                  });
 
                   res(r2);
                 } catch (err) {
@@ -203,10 +205,12 @@ function req(options = {}, keepLogin = true) {
           // 获取sessionId成功之后，发起请求
           requestP(options)
             .then((r2) => {
-              if (r2.rcode === 401) {
+              if (r2.code === 401) {
                 // 登录状态无效，则重新走一遍登录流程
                 // 销毁本地已失效的sessionId
-                store.setState('sessionId', '');
+                store.setState({
+                  sessionId: ''
+                });
 
                 getSessionId()
                   .then((r3) => {

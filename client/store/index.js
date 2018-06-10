@@ -2,15 +2,20 @@ const state = require('./state.js');
 const subObj = {};
 let id = 0;
 
-function setState(key, val) {
-  if (!key) {
+function setState(obj) {
+  if (!obj) {
     return
   }
 
-  const oV = state[key];
+  const keys = Object.keys(obj);
 
-  state[key] = val;
-  pub(key, val, oV);
+  keys.map((key) => {
+    const oV = state[key];
+    const val = obj[key];
+
+    state[key] = val;
+    pub(key, val, oV);
+  });
 }
 
 function pub(key, nV, oV) {

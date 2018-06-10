@@ -28,6 +28,8 @@ FW.App({
  */
 function initEnv() {
   // 默认初始化为线上环境
-  store.setState('apiUrl', setting.apiUrlTable.local);
-  store.setState('env', 'local');
+  store.setState({
+    apiUrl: setting.apiUrlTable.local,
+    env: 'local'
+  });
 }

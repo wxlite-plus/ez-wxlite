@@ -6,9 +6,12 @@ module.exports = (options = {}) => {
   const injectOptions = {};
   const patchOptions = {
     onLoad(...res) {
+      const opts = res[0];
+
       this.$store = store;
       this.$req = req;
-      console.log('Page option:', res[0]);
+      this.$opts = opts;
+      console.log('Page option:', opts);
       onLoad && onLoad.apply(this, res);
     }
   };
