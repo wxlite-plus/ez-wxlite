@@ -1,4 +1,8 @@
-<!--pages/index/index.wxml-->
-<view>Hello, {{name}}</view>
-<m-greeting />
-<navigator url="/pages/test/index"><button size="mini">test page</button></navigator>
+<view class="user_box">
+  <view class="avt_wrap">
+    <open-data type="userAvatarUrl" class="avt" />
+  </view>
+  <view class="name">
+    Hello, <open-data type="userNickName" /> :)
+  </view>
+</view>

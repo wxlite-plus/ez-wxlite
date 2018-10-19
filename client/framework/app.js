@@ -1,19 +1,17 @@
-const store = require('../store/index.js');
-const req = require('../req/index.js');
+const app = App;
 
 module.exports = (options = {}) => {
   const { onLaunch } = options;
-
-  const injectOptions = {};
   const patchOptions = {
     onLaunch(...res) {
-      this.$store = store;
-      this.$req = req;
-      console.log('App option:', res[0] || {});
-      onLaunch && onLaunch.apply(this, res);
-    }
+      const opts = res[0];
+      this.$opts = opts;
+      console.log('App option:', opts);
+      if (onLaunch) {
+        onLaunch.apply(this, res);
+      }
+    },
   };
-  const newOptions = Object.assign(injectOptions, options, patchOptions);
-
-  return App(newOptions);
+  const newOptions = Object.assign({}, options, patchOptions);
+  return app(newOptions);
 };

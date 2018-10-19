@@ -1,0 +1,13 @@
+var apiUrlTable = require('./apiUrlTable.wxs');
+var cdnPathTable = require('./cdnPathTable.wxs');
+
+var apiUrl = apiUrlTable.local;
+var cdnPath = cdnPathTable.local;
+
+var defaultAvt = cdnPath + '/img/default-face.png';
+
+module.exports = {
+  apiUrl: apiUrl,
+  cdnPath: cdnPath,
+  defaultAvt: defaultAvt,
+};

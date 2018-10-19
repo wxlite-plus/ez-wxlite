@@ -1,5 +1,0 @@
-<!--pages/test/index.wxml-->
-<view>
-  <view>系统信息（长按复制）：</view>
-  <view style="word-break: break-all;" bindlongtap="copyWinInfo">{{winInfoStr}}</view>
-</view>

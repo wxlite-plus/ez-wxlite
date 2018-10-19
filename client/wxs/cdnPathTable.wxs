@@ -1,0 +1,7 @@
+var cdnPathTable = {
+  local: 'http://localhost:8080/static',
+  online: '',
+  dev: '',
+};
+
+module.exports = cdnPathTable;

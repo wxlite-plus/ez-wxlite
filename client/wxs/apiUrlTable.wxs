@@ -1,0 +1,8 @@
+var apiUrlTable = {
+  local: 'http://localhost:8080',
+  online: '',
+  dev: '',
+  pre: '',
+};
+
+module.exports = apiUrlTable;
