@@ -101,7 +101,7 @@ function login() {
         if (r1.code) {
           // 获取sessionId
           requestP({
-            url: `${apiUrl}/job-customer/api/sys/login`,
+            url: `${apiUrl}/api/login`,
             method: 'POST',
             data: {
               jsCode: r1.code,
@@ -219,39 +219,53 @@ function req(options = {}, keepLogin = true) {
  * 图片上传
  */
 function uploadFile(data) {
-  const url = `${apiUrl}/job-customer/api/file/upload`;
+  const url = `${apiUrl}/api/uploadFile`;
+  const fn = () => new Promise((res, rej) => {
+    wx.uploadFile({
+      url,
+      filePath: data.filePath,
+      formData: {
+        type: data.type, // 1公司logo
+      },
+      name: 'file',
+      header: {
+        sessionId,
+      },
+      success(r) {
+        const isSuccess = isHttpSuccess(r.statusCode);
+        if (isSuccess) { // 成功的请求状态
+          res(JSON.parse(r.data));
+        } else {
+          rej({
+            msg: `服务器好像出了点小问题，请与客服联系~（错误代码：${r.statusCode}）`,
+            detail: r,
+          });
+        }
+      },
+      fail(err) {
+        rej(err);
+      },
+    });
+  });
   return new Promise((res, rej) => {
     getSessionId()
       .then(() => {
-        wx.uploadFile({
-          url,
-          filePath: data.filePath,
-          formData: {
-            type: data.type, // 1项目照片
-          },
-          name: 'file',
-          header: {
-            sessionId,
-          },
-          success(r) {
-            const isSuccess = isHttpSuccess(r.statusCode);
-            if (isSuccess) { // 成功的请求状态
-              res(JSON.parse(r.data));
+        fn()
+          .then((r) => {
+            if (r.code === 3000) {
+              sessionId = '';
+              getSessionId()
+                .then(() => {
+                  fn().then(res).catch(rej);
+                })
+                .catch(rej);
             } else {
-              rej({
-                msg: `服务器好像出了点小问题，请与客服联系~（错误代码：${r.statusCode}）`,
-                detail: r,
-              });
+              res(r);
             }
-          },
-          fail(err) {
-            rej(err);
-          },
-        });
+          })
+          .catch(rej);
       })
-      .catch((err) => {
-        rej(err);
-      });
+      .catch(rej);
   });
 }
 
