@@ -14,7 +14,15 @@ function decode(code) {
   return JSON.parse(decodeURIComponent(code));
 }
 
+function querify(obj) {
+  return Object.keys(obj).map((k) => {
+    const v = obj[k];
+    return `${k}=${v}`;
+  }).join('&');
+}
+
 module.exports = {
   encode,
   decode,
+  querify,
 };

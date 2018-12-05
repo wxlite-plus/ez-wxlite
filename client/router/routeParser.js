@@ -7,7 +7,7 @@ function parser(name) {
   const stack = name.split('.');
   stack.unshift({ inferior: routes });
   try {
-    const res = stack.reduce((pV, cV) => pV.inferior[cV]);
+    const res = stack.reduce((pV, cV) => pV && pV.inferior && pV.inferior[cV]);
     return res;
   } catch (err) {
     throw err;
