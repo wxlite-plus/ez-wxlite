@@ -254,6 +254,17 @@ req.user.updateMyInfo()
 `req.clearAllCache`清除所有缓存：接受一个参数`req api`（选填），当传值时，清除指定api的缓存，不传则清除所有api的缓存。
 
 #### 自动登录
+按照官方文档，小程序的登录流程应该是这样的：
+![登录流程](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/image/api-login.jpg?t=18122018)
+
+简单来理解，**小程序登录其实就是一个用code换取session_key的过程**。
+
+当session_key过期了，我再重新用新code换取新的session_key，再去发请求。
+
+那么，session_key过期我们怎么知道？有些开发者可能会用`wx.checkSession`去定时检查，但这是不好的实践，因为你把握不好时机，会造成资源浪费，**微信不会把 session_key 的有效期告知开发者，而是根据用户使用小程序的行为对 session_key 进行续期，用户越频繁使用小程序，session_key 有效期越长**。
+
+事实上，**只有在需要跟微信（后端）接口打交道的时候，才需要有效的session_key**，而大多数时候我们只停留在自己的业务里，并不需要跟微信打交道，我们可以约定自己的会话有效期，并且放宽一些，比如1天，只要是不需要跟微信打交道的功能，即便是session_key过期了，我们也还可以继续用，直到1天过去。
+
 req做了一个自动登录的逻辑，也就是当接口返回一个约定好的登录过期状态（默认是`res.code === 3000`，请根据实际情况自行修改）时，req会自动调用`wx.login`重新获取`js code`，再用`js code`去调用登录接口换取新的`sessionId`，最后再发起一次上次的请求。
 
 这让开发者可以更加专注在业务开发上。
