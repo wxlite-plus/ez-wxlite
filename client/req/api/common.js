@@ -1,4 +1,4 @@
-const { apiUrl } = require('../../config/index');
+const { apiUrl } = require('../../config/index.js');
 
 module.exports = {
   install(R, req) {

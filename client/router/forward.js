@@ -1,4 +1,4 @@
-const { encode } = require('./data.js');
+const { encode, querify } = require('./data.js');
 const routeParser = require('./routeParser.js');
 
 /**
@@ -7,9 +7,10 @@ const routeParser = require('./routeParser.js');
  */
 function forward(routeObj = {}, isReplace = false) {
   const {
-    name, data, success, fail, complete,
+    name, data, query, success, fail, complete,
   } = routeObj;
   let url = '';
+  const queryData = query || {};
   if (!name) {
     throw new Error('路由名称不能为空');
   }
@@ -18,9 +19,11 @@ function forward(routeObj = {}, isReplace = false) {
     throw new Error('没有匹配的路由规则');
   }
   url = route.path;
-  if (data && route.type !== 'tab') {
-    const query = encode(data);
-    url += `?encodedData=${query}`;
+  if (data) {
+    queryData.encodedData = encode(data);
+  }
+  if (route.type !== 'tab') {
+    url += `?${querify(queryData)}`;
   }
   const opt = {
     url,

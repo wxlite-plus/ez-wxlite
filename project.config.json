@@ -5,13 +5,16 @@
 		"es6": true,
 		"postcss": true,
 		"minified": true,
-		"newFeature": true
+		"newFeature": true,
+		"uglifyFileName": true
 	},
 	"compileType": "miniprogram",
-	"libVersion": "1.9.94",
-	"appid": "touristappid",
+	"libVersion": "2.4.1",
+	"appid": "wxef6bf5efcb99c709",
 	"projectname": "ez-wxlite",
 	"isGameTourist": false,
+	"miniprogramRoot": "client/",
+	"cloudfunctionRoot": "cloud_func/",
 	"condition": {
 		"search": {
 			"current": -1,
