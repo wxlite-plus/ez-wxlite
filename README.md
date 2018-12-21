@@ -261,13 +261,15 @@ req.user.updateMyInfo()
 
 当session_key过期了，我再重新用新code换取新的session_key，再去发请求。
 
-那么，session_key过期我们怎么知道？有些开发者可能会用`wx.checkSession`去定时检查，但这是不好的实践，因为你把握不好时机，会造成资源浪费，**微信不会把 session_key 的有效期告知开发者，而是根据用户使用小程序的行为对 session_key 进行续期，用户越频繁使用小程序，session_key 有效期越长**。
+那么，session_key过期我们怎么知道？有些开发者可能会用`wx.checkSession`去定时检查但是定多长的时间呢？不知道，因为**微信不会把 session_key 的有效期告知开发者，而是根据用户使用小程序的行为对 session_key 进行续期，用户越频繁使用小程序，session_key 有效期越长**，因此这是个不好的实践，因为你把握不好时机，会造成资源浪费并且增加不确定性。
 
-事实上，**只有在需要跟微信（后端）接口打交道的时候，才需要有效的session_key**，而大多数时候我们只停留在自己的业务里，并不需要跟微信打交道，我们可以约定自己的会话有效期，并且放宽一些，比如1天，只要是不需要跟微信打交道的功能，即便是session_key过期了，我们也还可以继续用，直到1天过去。
+事实上，**只有在需要跟微信（后端）接口打交道的时候，才需要有效的session_key**，那么后端肯定知道什么时候过期了，因为微信后端会告诉我们，所以我们把过期的判断交给后端，只要后端被告知过期了，接口就返回一个固定的状态，比如`code=3000`，前端收到这一状态之后，便重新走一遍登录流程，获取到新的`session_key`，再重新发起请求。
 
-req做了一个自动登录的逻辑，也就是当接口返回一个约定好的登录过期状态（默认是`res.code === 3000`，请根据实际情况自行修改）时，req会自动调用`wx.login`重新获取`js code`，再用`js code`去调用登录接口换取新的`sessionId`，最后再发起一次上次的请求。
+> 大多数时候我们只停留在自己的业务里，并不需要跟微信打交道，我们可以约定自己的会话有效期，并且放宽一些，比如1天，只要是不需要跟微信打交道，这个时效性就会宽松的多，性能也会得到提高。
 
-这让开发者可以更加专注在业务开发上。
+req的自动登录就是这么实现的，约定好登录过期状态（默认是`res.code === 3000`，请根据实际情况自行修改），req会自动调用`wx.login`重新获取`js code`，再用`js code`去调用登录接口换取新的`sessionId`，最后再发起一遍上次的请求。
+
+这让开发者可以更加专注在业务开发上，而不必关心登录过期的问题。
 
 
 ### router
@@ -288,10 +290,6 @@ Page({
   onReady() {
     router.push({
       name: 'home',
-      data: {
-        id: '123',
-        type: 1,
-      },
     });
   },
 });
@@ -305,4 +303,56 @@ Page({
 });
 ```
 
-相关内容请查阅：[小程序开发](https://www.jianshu.com/nb/22265658)
+当然，上面的`name: 'home'`肯定也是事先配置好的，要不然鬼知道home到底跳转到哪里。
+
+在`client/route/routes.js`中我们可以看到：
+
+```javascript
+module.exports = {
+  // 主页
+  home: {
+    type: 'tab',
+    path: '/pages/index/index',
+  },
+};
+```
+
+很明显，`home`其实就是`/pages/index/index`的一个别名，因为它是一个**tab**页面，所以我们也顺便指定了`type: 'tab'`，默认是`type: 'page'`。
+
+除了支持别名之外，name也支持直接寻址，比如跳转home还可以写成这样：
+```javascript
+router.push({
+  name: 'index',  // => /pages/index/index
+});
+
+router.push({
+  name: 'userCenter',  // => /pages/user_center/index
+});
+
+router.push({
+  name: 'userCenter.phone',  // => /pages/user_center/phone/index
+});
+
+router.push({
+  name: 'test.debug',  // => /pages/test/debug/index
+});
+```
+
+注意，为了方便维护，我们规定了每个页面都必须存放在一个特定的文件夹，一个文件夹的当前路径下只能存在一个index页面，比如`pages/index`下面会存放`pages/index/index.js`、`pages/index/index.wxml`、`pages/index/index.wxss`、`pages/index/index.json`，这时候你就不能继续在这个文件夹根路径存放另外一个页面，而必须是新建一个文件夹来存放，比如`pages/index/pageB/index.js`、`pages/index/pageB/index.wxml`、`pages/index/pageB/index.wxss`、`pages/index/pageB/index.json`。
+
+router支持微信路由的所有方法，映射关系如下：
+```javascript
+router.push => wx.navigateTo
+router.replace => wx.redirectTo
+router.pop => wx.navigateBack
+router.relaunch => wx.reLaunch
+```
+
+可能你会发现这里少了一个`wx.switchTab`，这不是遗漏，而是我们将这个接口集成到了`router.push`当中去了，因为我们认为，跳转一个页面到底是`page`的方式还是`tab`的方式这类事情，根本与业务无关，它应该被透明化。
+
+你可能会记得上面我们的`home`在路由配置的时候就已经指定了`type: 'tab'`的属性，这样一来我们便可以尽管调用`router.push({name: 'home'})`，至于具体是`wx.navigateTo`还是`wx.switchTab`，程序会自动帮我们处理的。
+
+这里还有一个好处就是，当一个页面需要从`tab`转变为`page`的时候，我们只需要改一下`routes`的定义就可以了，完全不需要去一个个修改业务中的代码。
+
+## 总结
+由于精力有限，本应该在一开始就写好的文档，一直到现在都还只是陆陆续续在更新，感谢支持，如果有什么宝贵意见可以直接通过邮箱（jack-lo@foxmail.com）联系我，谢谢！
