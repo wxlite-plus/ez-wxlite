@@ -4,18 +4,18 @@ ez-wxlite是一套小程序开发模板，旨在设计一套简洁、高效、�
 
 本套模板总体上分为三部分：
 
-* [server](##server)：为本地服务，不是后端服务，主要作用是mock接口以及静态文件服务；
-* [client](##client)：小程序源码部分；
+* [server](#server)：为本地服务，不是后端服务，主要作用是mock接口以及静态文件服务；
+* [client](#client)：小程序源码部分；
 * cloud_func：云开发中的云函数存放目录。
 
 ## client
 
 client部分是框架的核心，设计上分为：
 
-* [req](###req)：网络请求；
-* [router](###router)：路由；
-* [config](###config)：配置信息；
-* [utils](###utils)：工具集。
+* [req](#req)：网络请求；
+* [router](#router)：路由；
+* [config](#config)：配置信息；
+* [utils](#utils)：工具集。
 
 ### 使用
 
@@ -76,11 +76,11 @@ req是`wx.request`的高级封装，用于发起ajax请求以及文件上传。
 
 综上所述，`wx.request`需要一层高级的封装来简化操作，因此有了`req`，req代理了`wx.request`，并在这基础上做了一些设计工作，以提供良好的维护性：
 
-* [promisify](####promisify)：支持promise，替代callback的方式；
-* [简化respone](####简化respone)：简化返回的数据信息，只保留业务数据；
-* [method替代url](####method替代url)：使用js api的书写方式来替代直接书写url的方式；
-* [接口缓存](####接口缓存)：支持便捷的接口前端缓存；
-* [自动登录](####自动登录)：登录态过期自动重新登录，过程对开发者透明。
+* [promisify](#promisify)：支持promise，替代callback的方式；
+* [简化respone](#简化respone)：简化返回的数据信息，只保留业务数据；
+* [method替代url](#method替代url)：使用js api的书写方式来替代直接书写url的方式；
+* [接口缓存](#接口缓存)：支持便捷的接口前端缓存；
+* [自动登录](#自动登录)：登录态过期自动重新登录，过程对开发者透明。
 
 #### promisify
 
