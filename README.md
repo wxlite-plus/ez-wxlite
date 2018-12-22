@@ -151,13 +151,13 @@ wx.request({
 
 ```json
 {
-  code: 0,
-  data: {
+  "code": 0,
+  "data": {
     "name": "Jack",
     "age": 18,
     "gender": 1
   },
-  msg: "success"
+  "msg": "success"
 }
 ```
 
