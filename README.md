@@ -15,7 +15,7 @@ client部分是框架的核心，设计上分为：
 * [req](#req)：网络请求；
 * [router](#router)：路由；
 * [config](#config)：配置信息；
-* [utils](#utils)：工具集。
+* utils：工具集，用于存放一些通用的公共方法。
 
 ### 使用
 
