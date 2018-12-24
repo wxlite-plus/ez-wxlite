@@ -262,7 +262,7 @@ module.exports = R;
 某些接口使用频率高但是变动又少，比如“获取当前用户的个人信息”、“获取省市区数据”，我们可以在前端通过缓存来提高性能，为此我们提供了如下几个api来控制接口缓存：
 
 | api | 参数 | 返回值 | 示例 | 描述 |
-| - | - | - | - |
+| - | - | - | - | - |
 | req.cachify | [string]req api | [function]cachifyFn | req.cachify('user.getMyInfo')() | 调用接口并缓存数据 |
 | req.clearCache | [string]req api, [string]id(optional) | undefined | req.clearCache('user.getMyInfo') | 清除某个接口的缓存：接受两个参数，第一参数为`req api`名，第二参数为`id`（选填），也就是接口的唯一标识，这一般用在分页接口，默认可不填 |
 | req.clearAllCache | [string]req api(optional) | undefined | req.clearAllCache('user.getMyInfo')() | 清除所有缓存：接受一个参数`req api`（选填），当传值时，清除指定api的缓存，不传则清除所有api的缓存 |
