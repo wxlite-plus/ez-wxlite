@@ -1,12 +1,12 @@
 const proxy = require('proxy-middleware');
 
 function init(server) {
-  // server.get('/admin/info', (req, res) => {
-  //   res.json(succ({
-  //     id: '123456',
-  //     name: 'Jack'
-  //   }));
-  // });
+  server.get('/admin/info', (req, res) => {
+    res.json(succ({
+      id: '123456',
+      name: 'Jack'
+    }));
+  });
 
   // server.post('/uploadImg', (req, res) => {
   //   res.json(succ(avt));
@@ -17,10 +17,10 @@ function init(server) {
 
 function succ(data) {
   return {
-    rcode: 0,
+    code: 0,
     data: data,
     msg: 'ok'
-  }
+  };
 }
 
 module.exports = init;

@@ -2,11 +2,10 @@
 
 ez-wxlite是一套小程序开发模板，旨在设计一套简洁、高效、可维护的开发框架。
 
-本套模板总体上分为三部分：
+本套模板总体上分为两部分：
 
-* [server](#server)：为本地服务，不是后端服务，主要作用是mock接口以及静态文件服务；
 * [client](#client)：小程序源码部分；
-* cloud_func：云开发中的云函数存放目录。
+* [server](#server)：为本地服务，不是后端服务，主要作用是mock接口以及静态文件服务。
 
 ## client
 
@@ -45,7 +44,14 @@ App({
 
 ### config
 
-**config**为全局配置信息，大家一定有过跨页面共享数据的需求，比如有十几个页面都是用的同一个转发标题、转发描述，以及转发图片，那么我们就可以将通用的转发信息**shareData**都保存在一个文件里，作为配置文件让所有页面都能访问：
+**config**为全局配置信息，在本代码中预设了以下比较常用的设置，大家可以举一反三：
+
+* [shareData](####shareData)：通用转发配置；
+* [apiUrlTable](####apiUrlTable)：接口环境配置；
+
+#### shareData
+
+大家一定有过跨页面共享数据的需求，比如有十几个页面都是用的同一个转发标题、转发描述，以及转发图片，那么我们就可以将通用的转发信息**shareData**都保存在一个文件里，作为配置文件让所有页面都能访问：
 
 ```javascript
 // pages/index/index.js
@@ -59,6 +65,20 @@ Page({
 ```
 
 以上，我们将通用的分享信息存放在`config.shareData`里，这只是`config`的一个示例用法。
+
+#### apiUrlTable
+
+对于接口的调用，我们一般会有多套环境：local（本地）、dev（开发）、pre（预发）、release（生产）。为了方便切换，我们需要将这些环境都定义好。
+
+这个设置主要是配合[req](###req)来使用，因为接口的调用都封装在其中。
+
+需要切换环境的时候，只需要在`client/config/index.js`对以下片段进行修改即可：
+
+```javascript
+...
+const apiUrl = apiUrlTable.dev;
+...
+```
 
 另外我们也发现了，config是集成在`client/framework/index.js`里的，事实上，之前我们提到的**req**、**router**、**utils**也都是集成在`client/framework/index.js`里的，使用的时候不需要一个个单独引入，这么做的目的是减少模板代码，方便维护。
 
@@ -306,6 +326,7 @@ req.user.updateMyInfo()
 #### 自动登录
 
 按照官方文档，小程序的登录流程应该是这样的：
+
 ![登录流程](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/image/api-login.jpg?t=18122018)
 
 简单来理解，**小程序登录其实就是一个用code换取session_key的过程**。
@@ -429,8 +450,76 @@ router.relaunch => wx.reLaunch
 
 ## server
 
-（内容待补充）
+server为本地服务，不是后端服务，主要作用是：
 
-## 总结
+* mock服务：当后端接口未就绪时，使用自定义的数据模拟接口调用；
+* 静态文件服务：开发阶段使用本地静态资源替代线上的cdn资源；
 
-由于精力有限，本应该在一开始就写好的文档，一直到现在都还只是陆陆续续在更新，感谢支持，如果有什么宝贵意见可以直接通过邮箱（jack-lo@foxmail.com）联系我，谢谢！
+### 运行
+
+1. 命令行进入server目录，执行npm包安装：`npm install`（或者使用yarn）;
+2. 执行`npm run dev`。
+
+done！
+
+### mock服务
+
+mock的配置文件为`server/mock/init.js`，假设我需要一个**获取我的用户信息**的接口：
+
+```javascript
+function init(server) {
+  server.get('/user/myInfo', (req, res) => {
+    res.json({
+      code: 0,
+      data: {
+        id: '123456',
+        name: 'Jack'
+      },
+      msg: 'succ',
+    });
+  });
+}
+```
+
+接着我就可以通过访问[http://localhost:8080/user/myInfo](http://localhost:8080/user/myInfo)得到我预设的json。
+
+### 静态文件服务
+
+如果我们想要随意地切换静态资源服务环境，那么我们在使用静态资源的时候就不能**hard code**，那我们怎么做呢？我们使用wxs来配置静态资源的前缀。
+
+`client/wxs`这一目录存放的是wxs文件，其中我们预定义了**cdnPathTable.wxs**，它的含义类似于`client/config.apiUrlTable.js`，我们定义了local、dev、release三个环境，然后在wxml文件中使用：
+
+```html
+<!-- pages/index/index.wxml -->
+<wxs src="../../wxs/index.wxs" modal="utils"></wxs>
+<image src="{{utils.cdnPath}}/img/avt.jpg" />
+```
+
+这里的wxs和config其实没有什么区别，选择定义在wxs中是因为wxs在wxml中使用十分方便。
+
+## 其他
+
+为了使开发工作更简单高效，我们没有采用在小程序开发工具以外再搭建一层脚手架的做法，而是尽可能使用现有的工具和环境，借助于强大的vscode，我们还提供了：
+
+* eslint支持；
+* 借助typescript进行语法提示；
+
+...
+
+启用eslint功能只需要在根目录下运行`npm install`即可，typescript主要是实现小程序api的语法提示功能，当然这功能直接使用现有的vscode插件就可以实现，不过我目前没有找到比较好用的~考虑到微信的api文档更新比较频繁，插件的维护速度可能跟不上，所以简单地实现了一个本地化，在开发过程中可以手动补充，将自己常用的api定义好就足以提高效率了。
+
+## 结语
+
+### 关于脚手架
+
+关于小程序的开发，可能市面上有一些第三方的脚手架出现，比如mpvue和wepy等，我的观点是，由于小程序开发者工具的存在，小程序的开发已经有足够的模块化和自动化支持，能够满足开发需要，如果要在这上面再加一层编译，我觉得开销还是比较大的（而且小程序开发工具本来性能也不怎么样），我觉得并不是特别必要。
+
+另外，小程序开发工具目前也是支持打包npm的。
+
+### 使用vue的方式开发小程序
+
+对于喜欢用vue的方式来开发小程序的朋友，我也表示不是特别理解，在我看来其实vue和小程序的上手门槛都不高，这样做其实徒增了一些不稳定性和不确定性。利用好现有的开发者工具，用设计来弥补其他方面的不足，也许能换来更好的开发体验，这也是我持续完善这套模板的出发点。
+
+以上观点只是为了阐述我开发这个项目的出发点，并无其他恶意~
+
+感谢支持，欢迎提意见，如果你有其他更好的实践，也欢迎交流，可以直接通过邮箱（jack-lo@foxmail.com）联系我，谢谢！
