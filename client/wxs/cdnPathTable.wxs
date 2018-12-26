@@ -1,6 +1,6 @@
 var cdnPathTable = {
   local: 'http://localhost:8080/static',
-  online: '',
+  release: '',
   dev: '',
 };
 
