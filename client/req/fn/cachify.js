@@ -39,7 +39,7 @@ function cachifyPlugin(R) {
             cacheObj[apiName] = {};
           }
           cacheObj[apiName][id] = r1;
-          res(r1);
+          res(copy(r1));
         })
         .catch((err) => {
           rej(err);
