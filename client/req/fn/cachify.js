@@ -1,25 +1,6 @@
 const cacheObj = {};
 const defaultId = '__this_is_a_default_id__';
 
-/**
- * 数据拷贝
- * @param {any} data
- */
-function copy(data) {
-  if (data instanceof Array) {
-    return data.map(copy);
-  }
-  if (data instanceof Object) {
-    const obj = {};
-    Object.keys(data).map((key) => {
-      obj[key] = copy(data[key]);
-      return key;
-    });
-    return obj;
-  }
-  return data;
-}
-
 function cachifyPlugin(R) {
   /**
    * @param {string} apiName 对应req的api
@@ -38,14 +19,15 @@ function cachifyPlugin(R) {
           if (!caches) {
             cacheObj[apiName] = {};
           }
-          cacheObj[apiName][id] = r1;
-          res(r1);
+          const str = JSON.stringify(r1);
+          cacheObj[apiName][id] = str;
+          res(JSON.parse(r1));
         })
         .catch((err) => {
           rej(err);
         });
     } else {
-      res(copy(cache));
+      res(JSON.parse(cache));
     }
   });
 }
