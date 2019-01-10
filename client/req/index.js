@@ -1,4 +1,4 @@
-const R = require('./prototype.js');
+const req = require('./prototype.js');
 // fn
 const errFn = require('./fn/err.js');
 const cachifyFn = require('./fn/cachify.js');
@@ -12,9 +12,9 @@ const commonApi = require('./api/common.js');
  * { msg: '错误信息', detail: '详情' }
  */
 
-R.use(errFn);
-R.use(cachifyFn);
+req.use(errFn);
+req.use(cachifyFn);
 
-R.use(commonApi);
+req.use(commonApi);
 
-module.exports = R;
+module.exports = req;
