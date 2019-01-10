@@ -11,11 +11,11 @@ ez-wxlite是一套小程序开发模板，旨在设计一套简洁、高效、�
 
 client部分是框架的核心，设计上分为：
 
-* [req](https://github.com/wxlite-plus/ez-wxlite/wiki/req.md)：网络请求；
-* [router](https://github.com/wxlite-plus/ez-wxlite/wiki/router.md)：路由；
-* [config](https://github.com/wxlite-plus/ez-wxlite/wiki/config.md)：配置信息；
-* [utils](https://github.com/wxlite-plus/ez-wxlite/wiki/utils.md)：工具集，用于存放一些通用的公共方法。
-* [wxs](https://github.com/wxlite-plus/ez-wxlite/wiki/wxs.md)：工具集，wxml相关的一些公共变量及方法。
+* [req](https://github.com/wxlite-plus/ez-wxlite/wiki/req)：网络请求；
+* [router](https://github.com/wxlite-plus/ez-wxlite/wiki/router)：路由；
+* [config](https://github.com/wxlite-plus/ez-wxlite/wiki/config)：配置信息；
+* [utils](https://github.com/wxlite-plus/ez-wxlite/wiki/utils)：工具集，用于存放一些通用的公共方法。
+* [wxs](https://github.com/wxlite-plus/ez-wxlite/wiki/wxs)：工具集，wxml相关的一些公共变量及方法。
 
 ### 使用
 
@@ -202,7 +202,7 @@ req.user.getInfo({
 });
 ```
 
-看到这里你可能会说，咦，url跑哪去了？当然，url需要在某处被集中定义，具体请移步[wiki:method替代url](https://github.com/wxlite-plus/ez-wxlite/wiki/req.md#method替代url)。
+看到这里你可能会说，咦，url跑哪去了？当然，url需要在某处被集中定义，具体请移步[wiki:method替代url](https://github.com/wxlite-plus/ez-wxlite/wiki/req#method替代url)。
 
 #### 接口缓存
 
