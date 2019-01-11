@@ -86,8 +86,6 @@ req.user.getInfo({
   });
 ```
 
-既然都已经promise了，你当然也可以方便地使用**async/await**。
-
 #### 简化respone
 
 为了更加通用，`wx.request`的返回值包含了完整的`respone`内容，但在大部分情况下，开发者关注的只有`respone.data`部分，于是我们做了一层过滤，req的请求返回结果就是`respone.data`，至于异常的statusCode（指的是除了`(statusCode >= 200 && statusCode < 300) || statusCode === 304;`以外的情况），我们将它归为了`fail`的范畴，也就是promise的catch通道。
@@ -206,13 +204,7 @@ req.user.getInfo({
 
 #### 接口缓存
 
-某些接口使用频率高但是变动又少，比如“获取当前用户的个人信息”、“获取省市区数据”，我们可以在前端通过缓存来提高性能，为此我们提供了如下几个api来控制接口缓存：
-
-| api | 参数 | 返回值 | 示例 | 描述 |
-| - | - | - | - | - |
-| req.cachify | [string]req api | [function]cachifyFn | req.cachify('user.getMyInfo')() | 调用接口并缓存数据 |
-| req.clearCache | [string]req api, [string]id(optional) | undefined | req.clearCache('user.getMyInfo') | 清除某个接口的缓存：接受两个参数，第一参数为`req api`名，第二参数为`id`（选填），也就是接口的唯一标识，这一般用在分页接口，默认可不填 |
-| req.clearAllCache | [string]req api(optional) | undefined | req.clearAllCache('user.getMyInfo')() | 清除所有缓存：接受一个参数`req api`（选填），当传值时，清除指定api的缓存，不传则清除所有api的缓存 |
+某些接口使用频率高但是变动又少，比如“获取当前用户的个人信息”、“获取省市区数据”，我们可以在前端通过缓存来提高性能，为此我们提供了如下几个api来控制接口缓存：`req.cachify`（调用接口并缓存数据）、`req.clearCache`（清除某个接口的缓存）、`req.clearAllCache`（清除所有缓存）。
 
 我们假设你已经定义好了 “**获取当前用户的个人信息**”这一接口`req.user.getMyInfo`，我们要对这一接口进行调用后缓存，那么调用方式应该为：
 
@@ -250,11 +242,9 @@ req.user.updateMyInfo()
 
 > 注意：接口缓存是基于已定义接口的前提下，没有定义的接口是无法直接使用`req.cachify`调用的。
 
+更多内容请参考[接口缓存](https://github.com/wxlite-plus/ez-wxlite/wiki/req#接口缓存)。
+
 #### 自动登录
-
-按照官方文档，小程序的登录流程应该是这样的：
-
-![登录流程](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/image/api-login.jpg?t=18122018)
 
 简单来理解，**小程序登录其实就是一个用code换取session_key的过程**。
 
@@ -269,6 +259,8 @@ req.user.updateMyInfo()
 req的自动登录就是这么实现的，约定好登录过期状态（默认是`res.code === 3000`，请根据实际情况自行修改），req会自动调用`wx.login`重新获取`js code`，再用`js code`去调用登录接口换取新的`sessionId`，最后再发起一遍上次的请求。
 
 这让开发者可以更加专注在业务开发上，而不必关心登录过期的问题。
+
+详细内容请浏览[自动登录](https://github.com/wxlite-plus/ez-wxlite/wiki/req#自动登录)。
 
 ### router
 
