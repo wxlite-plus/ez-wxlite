@@ -1,4 +1,4 @@
-# ez-client
+# ez-wxlite
 
 ez-wxlite是一套小程序开发模板，旨在设计一套简洁、高效、可维护的开发框架。
 
@@ -6,6 +6,8 @@ ez-wxlite是一套小程序开发模板，旨在设计一套简洁、高效、�
 
 * [client](#client)：小程序源码部分；
 * [server](#server)：为本地服务，不是后端服务，主要作用是mock接口以及静态文件服务。
+
+点击这里下载模板：[ez-wxlite](https://github.com/wxlite-plus/ez-wxlite/releases)。
 
 ## client
 
