@@ -1,6 +1,6 @@
 const apiUrlTable = require('./apiUrlTable.js');
 
-const apiUrl = apiUrlTable.dev;
+const apiUrl = apiUrlTable.release;
 
 const shareData = {
   title: '我是默认分享标题',

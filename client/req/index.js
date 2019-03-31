@@ -1,20 +1,46 @@
-const req = require('./prototype.js');
-// fn
-const errFn = require('./fn/err.js');
-const cachifyFn = require('./fn/cachify.js');
+const { apiUrl } = require('../config/index.js');
+const req = require('../utils/mp-req/index.js');
 // api
-const commonApi = require('./api/common.js');
+const userApi = require('./api/user.js');
 
 /**
- * 备注：为了使errPicker正确工作，
- * 请尽量保持返回原始的err对象，避免自定义err对象
- * 若需要自定义err对象，请统一使用以下结构体：
- * { msg: '错误信息', detail: '详情' }
+ * code换取sessionId
+ * @param {string} code
  */
+function code2sessionId(code) {
+  return new Promise((res, rej) => {
+    wx.request({
+      url: `${apiUrl}/api/sys/login`,
+      method: 'POST',
+      data: {
+        code,
+      },
+      success(r1) {
+        if (r1.data && r1.data.code === 0) {
+          res(r1.data.data.sessionId);
+        } else {
+          rej(r1);
+        }
+      },
+      fail: rej,
+    });
+  });
+}
 
-req.use(errFn);
-req.use(cachifyFn);
+/**
+ * 检查session是否有效
+ * @param {any} res
+ */
+function isSessionAvailable(res) {
+  return res.code !== 3000;
+}
 
-req.use(commonApi);
+req.init({
+  apiUrl,
+  code2sessionId,
+  isSessionAvailable,
+});
+
+req.use(userApi);
 
 module.exports = req;
