@@ -1,4 +1,5 @@
-let sessionId = wx.getStorageSync('sessionId');
+const sessionStorageKey = 'mp-req-session-id';
+let sessionId = wx.getStorageSync(sessionStorageKey);
 const loginQueue = [];
 let isLoginning = false;
 
@@ -6,11 +7,13 @@ const req = {
   apiUrl: '',
   code2sessionId: null,
   isSessionAvailable: null,
+  sessionHeaderKey: 'sessionId',
   init(opt = {}) {
     const {
       apiUrl,
       code2sessionId,
       isSessionAvailable,
+      sessionHeaderKey,
     } = opt;
     if (apiUrl) {
       req.apiUrl = apiUrl;
@@ -20,6 +23,9 @@ const req = {
     }
     if (isSessionAvailable) {
       req.isSessionAvailable = isSessionAvailable;
+    }
+    if (sessionHeaderKey) {
+      req.sessionHeaderKey = sessionHeaderKey;
     }
   },
 };
@@ -38,58 +44,49 @@ function isHttpSuccess(status) {
  */
 function requestP(options = {}) {
   const {
-    url,
-    data,
-    method,
-    dataType,
-    responseType,
     success,
     fail,
-    complete,
   } = options;
-
   // 统一注入约定的header
   const header = Object.assign({
-    sessionId,
+    [req.sessionHeaderKey]: sessionId,
   }, options.header);
 
   return new Promise((res, rej) => {
-    wx.request({
-      url,
-      data,
-      header,
-      method,
-      dataType,
-      responseType,
-      success(r) {
-        const isSuccess = isHttpSuccess(r.statusCode);
-
-        if (isSuccess) { // 成功的请求状态
-          if (success) {
-            success(r.data);
+    wx.request(Object.assign(
+      {},
+      options,
+      {
+        header,
+        success(r) {
+          const isSuccess = isHttpSuccess(r.statusCode);
+          if (isSuccess) { // 成功的请求状态
+            if (success) {
+              success(r.data);
+              return;
+            }
+            res(r.data);
+          } else {
+            const err = {
+              msg: `服务器好像出了点小问题，请与客服联系~（错误代码：${r.statusCode}）`,
+              detail: r,
+            };
+            if (fail) {
+              fail(err);
+              return;
+            }
+            rej(err);
           }
-          res(r.data);
-        } else {
-          const err = {
-            msg: `服务器好像出了点小问题，请与客服联系~（错误代码：${r.statusCode}）`,
-            detail: r,
-          };
+        },
+        fail(err) {
           if (fail) {
             fail(err);
             return;
           }
           rej(err);
-        }
+        },
       },
-      fail(err) {
-        if (fail) {
-          fail(err);
-          return;
-        }
-        rej(err);
-      },
-      complete,
-    });
+    ));
   });
 }
 
@@ -113,7 +110,7 @@ function login() {
               sessionId = newSessionId; // 更新sessionId
               // 保存sessionId
               wx.setStorage({
-                key: 'sessionId',
+                key: sessionStorageKey,
                 data: newSessionId,
               });
               res(r2);
