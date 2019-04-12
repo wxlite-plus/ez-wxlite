@@ -14,7 +14,7 @@ ez-wxlite是一套小程序开发模板，旨在设计一套简洁、高效、�
 client部分是框架的核心，设计上分为：
 
 * [req](https://github.com/wxlite-plus/mp-req)：网络请求；
-* [router](https://github.com/wxlite-plus/ez-wxlite/wiki/router)：路由；
+* [router](https://github.com/wxlite-plus/mp-router)：路由；
 * [config](https://github.com/wxlite-plus/ez-wxlite/wiki/config)：配置信息；
 * [utils](https://github.com/wxlite-plus/ez-wxlite/wiki/utils)：工具集，用于存放一些通用的公共方法。
 * [wxs](https://github.com/wxlite-plus/ez-wxlite/wiki/wxs)：工具集，wxml相关的一些公共变量及方法。
@@ -74,8 +74,7 @@ req是`wx.request`的高级封装，用于发起ajax请求以及文件上传。
 1. 与接口的调用一样面临url的管理问题；
 2. 参数类型单一，只支持string。
 
-第一个问题很好解决，我们就跟req一样，做一个集中管理。
-第二个问题的情况是，当我们传递的参数argument不是`string`，而是`number`或者`boolean`时，也只能在下个页面得到一个`argument.toString()`值：
+当我们传递的参数argument不是`string`，而是`number`或者`boolean`时，也只能在下个页面得到一个`argument.toString()`值：
 
 ```javascript
 // pages/index/index.js
@@ -119,58 +118,7 @@ Page({
 });
 ```
 
-当然，上面的`name: 'home'`肯定也是事先配置好的，要不然鬼知道home到底跳转到哪里。
-
-在`client/route/routes.js`中我们可以看到：
-
-```javascript
-module.exports = {
-  // 主页
-  home: {
-    type: 'tab',
-    path: '/pages/index/index',
-  },
-};
-```
-
-很明显，`home`其实就是`/pages/index/index`的一个别名，同时因为它是一个**tab**页面，所以我们也顺便指定了`type: 'tab'`，默认是`type: 'page'`。
-
-除了支持别名之外，name也支持直接寻址，比如跳转home还可以写成这样：
-
-```javascript
-router.push({
-  name: 'index',  // => /pages/index/index
-});
-
-router.push({
-  name: 'userCenter',  // => /pages/user_center/index
-});
-
-router.push({
-  name: 'userCenter.phone',  // => /pages/user_center/phone/index
-});
-
-router.push({
-  name: 'test.debug',  // => /pages/test/debug/index
-});
-```
-
-> 注意，为了方便维护，我们规定了每个页面都必须存放在一个特定的文件夹，一个文件夹的当前路径下只能存在一个index页面，比如`pages/index`下面会存放`pages/index/index.js`、`pages/index/index.wxml`、`pages/index/index.wxss`、`pages/index/index.json`，这时候你就不能继续在这个文件夹根路径存放另外一个页面，而必须是新建一个文件夹来存放，比如`pages/index/pageB/index.js`、`pages/index/pageB/index.wxml`、`pages/index/pageB/index.wxss`、`pages/index/pageB/index.json`。
-
-router支持微信路由的所有方法，映射关系如下：
-
-```javascript
-router.push => wx.navigateTo
-router.replace => wx.redirectTo
-router.pop => wx.navigateBack
-router.relaunch => wx.reLaunch
-```
-
-可能你会发现这里少了一个`wx.switchTab`，这不是遗漏，而是被集成到了`router.push`当中去了，因为我们认为，跳转一个页面到底是`page`的方式还是`tab`的方式这类事情，根本与业务无关，它应该被透明化。
-
-你可能会记得上面我们的`home`在路由配置的时候就已经指定了`type: 'tab'`的属性，这样一来我们便可以尽管调用`router.push({name: 'home'})`，至于具体是`wx.navigateTo`还是`wx.switchTab`，程序会自动帮我们处理的。
-
-这里还有一个好处就是，当一个页面需要从`tab`转变为`page`的时候，我们只需要改一下`routes`的定义就可以了，完全不需要去一个个修改业务中的代码。
+详细内容请浏览[mp-router](https://github.com/wxlite-plus/mp-router)。
 
 ## server
 
