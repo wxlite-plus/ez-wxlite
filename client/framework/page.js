@@ -1,4 +1,4 @@
-const { decode } = require('../router/data.js');
+const { extract } = require('../router/index.js');
 
 const page = Page;
 
@@ -7,8 +7,7 @@ module.exports = (options = {}) => {
   const patchOptions = {
     onLoad(...res) {
       const opts = res[0];
-      const { encodedData } = opts;
-      const $opts = encodedData ? decode(encodedData) : {};
+      const $opts = extract(opts) || {};
       this.$opts = $opts;
       console.log('Page $opts:', $opts);
       if (onLoad) {

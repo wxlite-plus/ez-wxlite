@@ -1,3 +1,4 @@
+const { encodeKey } = require('./store.js');
 const { encode, querify } = require('./data.js');
 const routeParser = require('./routeParser.js');
 
@@ -20,7 +21,7 @@ function relaunch(routeObj = {}) {
   }
   url = route.path;
   if (data) {
-    queryData.encodedData = encode(data);
+    queryData[encodeKey] = encode(data);
   }
   if (route.type !== 'tab') {
     url += `?${querify(queryData)}`;

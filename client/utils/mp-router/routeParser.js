@@ -1,15 +1,4 @@
-const routes = require('./routes.js');
-
-const routeMap = {};
-
-Object.keys(routes).map((key) => {
-  const route = routes[key];
-  routeMap[key] = route;
-  if (route.path) {
-    routeMap[route.path] = route;
-  }
-  return key;
-});
+const { routeMap } = require('./store.js');
 
 /**
  * 路由名称转路径
